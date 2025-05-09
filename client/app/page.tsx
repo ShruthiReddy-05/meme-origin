@@ -2,11 +2,29 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Upload, Image as ImageIcon, Clock, Globe, Link2 } from 'lucide-react';
+import { Search, Upload } from 'lucide-react';
+import Image from 'next/image';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-const MemeInfo = ({ memeInfo }: { memeInfo: any }) => {
+interface MemeResult {
+  imageUrl?: string;
+  description: string;
+  firstAppearance: string;
+  characteristics: string;
+  variations: string;
+  timeline: {
+    rawContent: string;
+  };
+  culturalImpact: {
+    rawContent: string;
+  };
+  relatedMemes: {
+    rawContent: string;
+  };
+}
+
+const MemeInfo = ({ memeInfo }: { memeInfo: MemeResult }) => {
   if (!memeInfo) return null;
 
   const formatText = (text: string) => {
@@ -20,7 +38,7 @@ const MemeInfo = ({ memeInfo }: { memeInfo: any }) => {
     ));
   };
 
-  const renderTimeline = (timeline: any) => {
+  const renderTimeline = (timeline: MemeResult['timeline']) => {
     if (!timeline?.rawContent) return <p className="text-gray-500">Timeline information not available</p>;
     return (
       <div className="space-y-4">
@@ -31,7 +49,7 @@ const MemeInfo = ({ memeInfo }: { memeInfo: any }) => {
     );
   };
 
-  const renderCulturalImpact = (impact: any) => {
+  const renderCulturalImpact = (impact: MemeResult['culturalImpact']) => {
     if (!impact?.rawContent) return <p className="text-gray-500">Cultural impact information not available</p>;
     return (
       <div className="space-y-4">
@@ -42,7 +60,7 @@ const MemeInfo = ({ memeInfo }: { memeInfo: any }) => {
     );
   };
 
-  const renderRelatedMemes = (memes: any) => {
+  const renderRelatedMemes = (memes: MemeResult['relatedMemes']) => {
     if (!memes?.rawContent) return <p className="text-gray-500">Related memes information not available</p>;
     return (
       <div className="space-y-4">
@@ -97,12 +115,12 @@ export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [result, setResult] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [result, setResult] = useState<MemeResult | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         setError('Image size should be less than 5MB');
@@ -111,13 +129,13 @@ export default function Home() {
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -151,9 +169,9 @@ export default function Home() {
 
       const data = await response.json();
       setResult(data);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error:', err);
-      setError(err.message || 'An unexpected error occurred');
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -203,10 +221,11 @@ export default function Home() {
               </label>
               {imagePreview && (
                 <div className="relative w-16 h-16">
-                  <img
+                  <Image
                     src={imagePreview}
                     alt="Preview"
-                    className="w-full h-full object-cover rounded-lg"
+                    fill
+                    className="object-cover rounded-lg"
                   />
                   <button
                     type="button"
@@ -251,11 +270,14 @@ export default function Home() {
             {result.imageUrl && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-2xl font-bold mb-4 text-black">Uploaded Image</h2>
-                <img
-                  src={`${API_URL}${result.imageUrl}`}
-                  alt="Uploaded meme"
-                  className="max-w-full h-auto rounded-lg"
-                />
+                <div className="relative w-full h-64">
+                  <Image
+                    src={`${API_URL}${result.imageUrl}`}
+                    alt="Uploaded meme"
+                    fill
+                    className="object-contain rounded-lg"
+                  />
+                </div>
               </div>
             )}
             <MemeInfo memeInfo={result} />
