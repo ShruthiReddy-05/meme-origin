@@ -178,7 +178,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white p-8">
+    <main className="min-h-screen bg-gradient-to-b from-pink-100 to-blue-100 text-gray-800 p-8">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -203,13 +203,13 @@ export default function Home() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter meme name..."
-                className="w-full px-4 py-3 bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 border border-pink-200"
               />
               <Search className="absolute right-3 top-3 text-gray-400" />
             </div>
 
             <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2 cursor-pointer bg-gray-800 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+              <label className="flex items-center space-x-2 cursor-pointer bg-white/80 backdrop-blur-sm px-4 py-3 rounded-lg hover:bg-pink-50 transition-colors border border-pink-200">
                 <Upload className="text-gray-400" />
                 <span>Upload Image</span>
                 <input
@@ -245,7 +245,7 @@ export default function Home() {
           <button
             type="submit"
             disabled={loading || (!query && !selectedImage)}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-pink-300 to-blue-300 text-white py-3 rounded-lg hover:from-pink-400 hover:to-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {loading ? 'Analyzing...' : 'Explore Meme'}
           </button>
@@ -255,7 +255,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-6 p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-500"
+            className="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg text-pink-600"
           >
             {error}
           </motion.div>
