@@ -145,12 +145,3 @@ The API returns meme information in the following structure:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Perplexity AI for providing the API
-- Next.js team for the amazing framework
-- All contributors and users of the application
